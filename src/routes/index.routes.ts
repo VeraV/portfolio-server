@@ -1,7 +1,9 @@
 const express = require("express");
+
+import { Request, Response, NextFunction } from "express";
 const router = express.Router();
 
-router.get("/", (req, res, next) => {
+router.get("/", (req: Request, res: Response, next: NextFunction) => {
   res.json("All good in here");
 });
 
