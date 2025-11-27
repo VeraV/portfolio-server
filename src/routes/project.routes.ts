@@ -2,6 +2,7 @@ import express from "express";
 import { Request, Response } from "express";
 import prisma from "../db/index";
 import { RequestCreateProject, RequestUpdateProject } from "../types/requests";
+import { isAuthenticated } from "../middleware/jwt.middleware";
 
 const router = express.Router();
 
@@ -28,6 +29,11 @@ router.get("/:id", async (req: Request, res: Response) => {
   try {
     const project = await prisma.project.findUnique({
       where: { id: req.params.id },
+      include: {
+        techStack: {
+          include: { technology: true },
+        },
+      },
     });
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
@@ -39,7 +45,7 @@ router.get("/:id", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/", async (req: RequestCreateProject, res: Response) => {
+router.post("/", isAuthenticated, async (req: RequestCreateProject, res: Response) => {
   const {
     name,
     description_short,
@@ -47,9 +53,11 @@ router.post("/", async (req: RequestCreateProject, res: Response) => {
     client_deploy_url,
     server_github_url,
     server_deploy_url,
+    image_url,
+    technologyIds,
   } = req.body;
 
-  if (!name || !description_short || !client_github_url || !client_deploy_url) {
+  if (!name || !description_short || !client_github_url || !client_deploy_url || !image_url) {
     res.status(400).json({ message: "Error: some fields are missing" });
     return;
   }
@@ -63,6 +71,13 @@ router.post("/", async (req: RequestCreateProject, res: Response) => {
         client_deploy_url,
         server_github_url,
         server_deploy_url,
+        image_url,
+        techStack: {
+          create: technologyIds.map((techId) => ({ technologyId: techId })),
+        },
+      },
+      include: {
+        techStack: true,
       },
     });
     res.json(createdProject);
@@ -72,7 +87,7 @@ router.post("/", async (req: RequestCreateProject, res: Response) => {
   }
 });
 
-router.put("/:id", async (req: RequestUpdateProject, res: Response) => {
+router.put("/:id", isAuthenticated, async (req: RequestUpdateProject, res: Response) => {
   if (!req.params.id) {
     return res.status(400).json({ message: "Project ID is required" });
   }
@@ -84,9 +99,11 @@ router.put("/:id", async (req: RequestUpdateProject, res: Response) => {
     client_deploy_url,
     server_github_url,
     server_deploy_url,
+    image_url,
+    technologyIds,
   } = req.body;
 
-  if (!name || !description_short || !client_github_url || !client_deploy_url) {
+  if (!name || !description_short || !client_github_url || !client_deploy_url || !image_url) {
     res.status(400).json({ message: "Error: some fields are missing" });
     return;
   }
@@ -101,6 +118,18 @@ router.put("/:id", async (req: RequestUpdateProject, res: Response) => {
         client_deploy_url,
         server_github_url,
         server_deploy_url,
+        image_url,
+        techStack: {
+          deleteMany: {}, // ← delete all previous relations
+          create: technologyIds.map((techId) => ({
+            technologyId: techId,
+          })),
+        },
+      },
+      include: {
+        techStack: {
+          include: { technology: true },
+        },
       },
     });
     res.json(updatedProject);
@@ -110,14 +139,8 @@ router.put("/:id", async (req: RequestUpdateProject, res: Response) => {
   }
 });
 
-router.delete("/:id", async (req: Request, res: Response) => {
+router.delete("/:id", isAuthenticated, async (req: Request, res: Response) => {
   try {
-    const deleteTechStack = prisma.projectTechStack.deleteMany({
-      where: {
-        projectId: req.params.id,
-      },
-    });
-
     const deletedProject = await prisma.project.delete({
       where: {
         id: req.params.id,

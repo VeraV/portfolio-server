@@ -3,6 +3,8 @@
 require("dotenv").config();
 import techCategoryRoutes from "./routes/tech-category.routes";
 import projectRoutes from "./routes/project.routes";
+import technologyRoutes from "./routes/technology.routes";
+import authRoutes from "./routes/auth.routes";
 
 // ℹ️ Connects to the database
 //require("./db");
@@ -18,12 +20,12 @@ require("./config")(app);
 
 app.use("/api/tech-category", techCategoryRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/technology", technologyRoutes);
 
 // 👇 Start handling routes here
 const indexRoutes = require("./routes/index.routes");
 app.use("/api", indexRoutes);
 
-const authRoutes = require("./routes/auth.routes");
 app.use("/auth", authRoutes);
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes

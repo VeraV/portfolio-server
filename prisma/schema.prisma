@@ -32,14 +32,16 @@ model Technology {
 
 model Project {
   id                    String   @id @default(cuid())
-  name                  String   @unique  
-  server_github_url     String? 
+  name                  String   @unique
+  server_github_url     String?
   client_github_url     String
   server_deploy_url     String?
   client_deploy_url     String
   description_short     String
+  image_url             String
 
   techStack ProjectTechStack[]
+  manuals   ProjectManual[]
 }
 
 model ProjectTechStack {
@@ -47,8 +49,39 @@ model ProjectTechStack {
   projectId       String
   technologyId    String
 
-  project  Project @relation(fields: [projectId], references: [id]) 
-  technology  Technology @relation(fields: [technologyId], references: [id]) 
+  project  Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  technology  Technology @relation(fields: [technologyId], references: [id])
 
   @@unique([projectId, technologyId])
+}
+
+model ProjectManual {
+  id          String   @id @default(cuid())
+  projectId   String
+  title       String
+  description String
+  version     String
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  steps   ManualStep[]
+}
+
+model ManualStep {
+  id          String   @id @default(cuid())
+  manualId    String
+  step_number Int
+  image_url   String
+  description String
+
+  manual ProjectManual @relation(fields: [manualId], references: [id], onDelete: Cascade)
+
+  @@unique([manualId, step_number])
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
 }
