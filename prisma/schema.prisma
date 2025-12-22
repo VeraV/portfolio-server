@@ -10,64 +10,65 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 model TechCategory {
-  id    String   @id @default(cuid())
-  name  String   @unique     
+  id           String       @id @default(cuid())
+  name         String       @unique
   technologies Technology[]
 }
 
 model Technology {
-  id                String   @id @default(cuid())
-  name              String   @unique  
+  id                String @id @default(cuid())
+  name              String @unique
   logo_url          String
   official_site_url String
-  categoryId        String 
+  categoryId        String
 
-  category          TechCategory @relation(fields: [categoryId], references: [id]) 
-  projects          ProjectTechStack[]
+  category TechCategory       @relation(fields: [categoryId], references: [id])
+  projects ProjectTechStack[]
 }
 
 model Project {
-  id                    String   @id @default(cuid())
-  name                  String   @unique
-  server_github_url     String?
-  client_github_url     String
-  server_deploy_url     String?
-  client_deploy_url     String
-  description_short     String
-  image_url             String
+  id                String  @id @default(cuid())
+  name              String  @unique
+  server_github_url String?
+  client_github_url String
+  server_deploy_url String?
+  client_deploy_url String
+  description_short String
+  image_url         String
 
   techStack ProjectTechStack[]
   manuals   ProjectManual[]
 }
 
 model ProjectTechStack {
-  id              String   @id @default(cuid())
-  projectId       String
-  technologyId    String
+  id           String @id @default(cuid())
+  projectId    String
+  technologyId String
 
-  project  Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  technology  Technology @relation(fields: [technologyId], references: [id])
+  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  technology Technology @relation(fields: [technologyId], references: [id])
 
   @@unique([projectId, technologyId])
 }
 
 model ProjectManual {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   projectId   String
   title       String
   description String
   version     String
+  isActive    Boolean @default(false)
 
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
   steps   ManualStep[]
 }
 
 model ManualStep {
-  id          String   @id @default(cuid())
+  id          String @id @default(cuid())
   manualId    String
   step_number Int
   image_url   String

@@ -5,6 +5,8 @@ import techCategoryRoutes from "./routes/tech-category.routes";
 import projectRoutes from "./routes/project.routes";
 import technologyRoutes from "./routes/technology.routes";
 import authRoutes from "./routes/auth.routes";
+import manualRoutes from "./routes/manual.routes";
+import stepRoutes from "./routes/step.routes";
 
 // ℹ️ Connects to the database
 //require("./db");
@@ -21,6 +23,8 @@ require("./config")(app);
 app.use("/api/tech-category", techCategoryRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/technology", technologyRoutes);
+app.use("/api/manuals", manualRoutes);
+app.use("/api/steps", stepRoutes);
 
 // 👇 Start handling routes here
 const indexRoutes = require("./routes/index.routes");

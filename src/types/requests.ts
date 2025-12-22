@@ -43,3 +43,35 @@ export interface RequestCreateTechnology extends Request {
     categoryId: string;
   };
 }
+
+export interface RequestCreateManual extends Request {
+  body: {
+    projectId: string;
+    title: string;
+    description: string;
+    version: string;
+  };
+}
+
+export interface RequestUpdateManual extends Request {
+  body: {
+    title: string;
+    description: string;
+    version: string;
+  };
+}
+
+export interface RequestCreateManualStep extends Request {
+  body: {
+    manualId: string;
+    image_url: string;
+    description: string;
+  };
+}
+
+export interface RequestUpdateStep extends Request {
+  body: {
+    image_url: string;
+    description: string;
+  };
+}
