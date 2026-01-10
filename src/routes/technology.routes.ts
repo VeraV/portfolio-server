@@ -12,6 +12,9 @@ router.get("/", async (req: Request, res: Response) => {
       include: {
         category: true,
       },
+      orderBy: {
+        sort_order: "asc",
+      },
     });
     res.json(technologies);
   } catch (err) {
@@ -20,31 +23,35 @@ router.get("/", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/", isAuthenticated, async (req: RequestCreateTechnology, res: Response) => {
-  const { name, logo_url, official_site_url, categoryId } = req.body;
+router.post(
+  "/",
+  isAuthenticated,
+  async (req: RequestCreateTechnology, res: Response) => {
+    const { name, logo_url, official_site_url, categoryId } = req.body;
 
-  if (!name || !logo_url || !official_site_url || !categoryId) {
-    res.status(400).json({ message: "Error: some fields are missing" });
-    return;
-  }
+    if (!name || !logo_url || !official_site_url || !categoryId) {
+      res.status(400).json({ message: "Error: some fields are missing" });
+      return;
+    }
 
-  try {
-    const createdTechnology = await prisma.technology.create({
-      data: {
-        name,
-        logo_url,
-        official_site_url,
-        categoryId,
-      },
-      include: {
-        category: true,
-      },
-    });
-    res.json(createdTechnology);
-  } catch (err) {
-    console.log("Error creating technology...", err);
-    res.status(500).json({ message: "Error creating technology" });
+    try {
+      const createdTechnology = await prisma.technology.create({
+        data: {
+          name,
+          logo_url,
+          official_site_url,
+          categoryId,
+        },
+        include: {
+          category: true,
+        },
+      });
+      res.json(createdTechnology);
+    } catch (err) {
+      console.log("Error creating technology...", err);
+      res.status(500).json({ message: "Error creating technology" });
+    }
   }
-});
+);
 
 export default router;

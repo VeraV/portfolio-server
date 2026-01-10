@@ -14,6 +14,9 @@ router.get("/", async (req: Request, res: Response) => {
           include: { technology: true },
         },
       },
+      orderBy: {
+        sort_order: "desc",
+      },
     });
     res.json(projects);
   } catch (err) {
@@ -34,11 +37,11 @@ router.get("/:id", async (req: Request, res: Response) => {
           include: { technology: true },
         },
         manuals: {
-          where: {isActive: true},
+          where: { isActive: true },
           include: {
-            steps: {orderBy: {step_number: "asc"}}
-          }
-        }
+            steps: { orderBy: { step_number: "asc" } },
+          },
+        },
       },
     });
     if (!project) {

@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -20,61 +14,58 @@ model TechCategory {
 }
 
 model Technology {
-  id                String @id @default(cuid())
-  name              String @unique
+  id                String             @id @default(cuid())
+  name              String             @unique
   logo_url          String
   official_site_url String
   categoryId        String
-
-  category TechCategory       @relation(fields: [categoryId], references: [id])
-  projects ProjectTechStack[]
+  sort_order        Int?
+  projects          ProjectTechStack[]
+  category          TechCategory       @relation(fields: [categoryId], references: [id])
 }
 
 model Project {
-  id                String  @id @default(cuid())
-  name              String  @unique
+  id                String             @id @default(cuid())
+  name              String             @unique
   server_github_url String?
   client_github_url String
   server_deploy_url String?
   client_deploy_url String
   description_short String
   image_url         String
-
-  techStack ProjectTechStack[]
-  manuals   ProjectManual[]
+  sort_order        Int?
+  manuals           ProjectManual[]
+  techStack         ProjectTechStack[]
 }
 
 model ProjectTechStack {
-  id           String @id @default(cuid())
+  id           String     @id @default(cuid())
   projectId    String
   technologyId String
-
-  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  technology Technology @relation(fields: [technologyId], references: [id])
+  project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  technology   Technology @relation(fields: [technologyId], references: [id])
 
   @@unique([projectId, technologyId])
 }
 
 model ProjectManual {
-  id          String  @id @default(cuid())
+  id          String       @id @default(cuid())
   projectId   String
   title       String
   description String
   version     String
-  isActive    Boolean @default(false)
-
-  project Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  steps   ManualStep[]
+  isActive    Boolean      @default(false)
+  steps       ManualStep[]
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model ManualStep {
-  id          String @id @default(cuid())
+  id          String        @id @default(cuid())
   manualId    String
   step_number Int
   image_url   String
   description String
-
-  manual ProjectManual @relation(fields: [manualId], references: [id], onDelete: Cascade)
+  manual      ProjectManual @relation(fields: [manualId], references: [id], onDelete: Cascade)
 
   @@unique([manualId, step_number])
 }
