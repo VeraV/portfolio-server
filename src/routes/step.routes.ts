@@ -1,15 +1,16 @@
 import express from "express";
 import { Request, Response } from "express";
 import prisma from "../db";
+import { isAuthenticated } from "../middleware/jwt.middleware";
 import { RequestCreateManualStep, RequestUpdateStep } from "../types/requests";
 
 const router = express.Router();
 
-router.post("/", async (req: RequestCreateManualStep, res: Response) => {
+router.post("/", isAuthenticated, async (req: RequestCreateManualStep, res: Response) => {
   const { manualId, description, image_url } = req.body;
 
   if (!manualId || !description || !image_url) {
-    return res.status(400).json({ message: "All step fild are required." });
+    return res.status(400).json({ message: "All step fields are required." });
   }
 
   try {
@@ -39,7 +40,7 @@ router.post("/", async (req: RequestCreateManualStep, res: Response) => {
   }
 });
 
-router.patch("/:stepId", async (req: RequestUpdateStep, res: Response) => {
+router.patch("/:stepId", isAuthenticated, async (req: RequestUpdateStep, res: Response) => {
   const { image_url, description } = req.body;
   if (!image_url || !description) {
     return res
