@@ -22,8 +22,6 @@ FROM base as final
 
 ENV NODE_ENV production
 
-USER node
-
 COPY package.json package-lock.json ./
 # Install only production dependencies
 RUN npm ci --omit=dev
@@ -34,6 +32,9 @@ COPY --from=build /usr/src/app/prisma ./prisma
 # Copy generated Prisma Client
 COPY --from=build /usr/src/app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=build /usr/src/app/node_modules/@prisma ./node_modules/@prisma
+
+# Run as non-root user after all installs/copies are done
+USER node
 
 EXPOSE 5005
 
