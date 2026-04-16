@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import rateLimit from "express-rate-limit";
 import prisma from "../db/index";
 import { RequestWithPayload } from "../types/requests";
 import { isAuthenticated } from "../middleware/jwt.middleware";
@@ -10,8 +11,17 @@ const router = express.Router();
 // How many rounds should bcrypt run the salt (default - 10 rounds)
 const saltRounds = 10;
 
+// Rate limiter for the login endpoint: 5 attempts per 15 minutes per IP
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many login attempts. Please try again later." },
+});
+
 // POST /auth/login - Verifies email and password and returns a JWT
-router.post("/login", async (req: Request, res: Response, next: NextFunction) => {
+router.post("/login", loginLimiter, async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
 
   // Check if email or password are provided as empty string
