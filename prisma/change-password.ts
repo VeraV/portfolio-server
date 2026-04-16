@@ -41,8 +41,8 @@ async function main() {
   // Get new password
   const newPassword = await question('Enter new password: ');
 
-  if (!newPassword || newPassword.length < 6) {
-    console.log('\n❌ Password must be at least 6 characters long!\n');
+  if (!newPassword || newPassword.length < 18) {
+    console.log('\n❌ Password must be at least 18 characters long!\n');
     process.exit(1);
   }
 
