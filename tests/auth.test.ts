@@ -1,6 +1,6 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
-import type { Express } from 'express';
+import app from '../src/app';
 import {
   TEST_ADMIN_EMAIL,
   TEST_ADMIN_PASSWORD,
@@ -9,8 +9,6 @@ import {
   disconnect,
 } from './helpers/db';
 import { getAdminToken } from './helpers/auth';
-
-const app: Express = require('../src/app');
 
 describe('Auth', () => {
   beforeAll(async () => {

@@ -1,5 +1,5 @@
 import request from 'supertest';
-import type { Express } from 'express';
+import app from '../src/app';
 import {
   SEED,
   prisma,
@@ -8,8 +8,6 @@ import {
 } from './helpers/db';
 import { getAdminToken, authHeader } from './helpers/auth';
 import { createProject, createManual } from './helpers/factories';
-
-const app: Express = require('../src/app');
 
 describe('Projects', () => {
   beforeEach(async () => {
