@@ -1,7 +1,5 @@
 import request from 'supertest';
-import type { Express } from 'express';
-
-const app: Express = require('../src/app');
+import app from '../src/app';
 
 describe('Health check', () => {
   it('GET /api/health returns 200 OK', async () => {
