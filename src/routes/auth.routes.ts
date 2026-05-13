@@ -11,13 +11,16 @@ const router = express.Router();
 // How many rounds should bcrypt run the salt (default - 10 rounds)
 const saltRounds = 10;
 
-// Rate limiter for the login endpoint: 5 attempts per 15 minutes per IP
+// Rate limiter for the login endpoint: 5 attempts per 15 minutes per IP.
+// Skipped when DISABLE_LOGIN_RATE_LIMIT=true (set in Playwright config so
+// the long-lived dev server doesn't accumulate counts across E2E runs).
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: "Too many login attempts. Please try again later." },
+  skip: () => process.env.DISABLE_LOGIN_RATE_LIMIT === "true",
 });
 
 // POST /auth/login - Verifies email and password and returns a JWT
