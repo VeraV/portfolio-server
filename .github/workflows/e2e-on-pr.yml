@@ -1,0 +1,20 @@
+name: E2E (on server PR)
+
+# Runs the full Playwright suite on every PR to portfolio-server/main.
+# Tests this PR's server branch against the current main of client and
+# the current main of the tests repo.
+#
+# The actual workflow lives in portfolio-tests as a reusable workflow.
+# This file just invokes it with the right refs.
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  e2e:
+    uses: VeraV/portfolio-tests/.github/workflows/_e2e-reusable.yml@main
+    with:
+      tests-ref: main
+      server-ref: ${{ github.head_ref }}
+      client-ref: main
